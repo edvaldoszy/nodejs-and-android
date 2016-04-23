@@ -1,0 +1,37 @@
+{
+  "name": "nodejs-and-android",
+  "version": "1.0.0",
+  "description": "Restful API with Android client",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/edvaldoszy/nodejs-and-android.git"
+  },
+  "keywords": [
+    "nodejs",
+    "restful",
+    "android"
+  ],
+  "author": "Edvaldo Szymonek <edvaldoszy@gmail.com> (http://edvaldotsi.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/edvaldoszy/nodejs-and-android/issues"
+  },
+  "homepage": "https://github.com/edvaldoszy/nodejs-and-android#readme",
+  "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
+    "body-parser": "^1.15.0",
+    "express": "^4.13.4",
+    "express-load": "^1.1.15",
+    "fs": "0.0.2",
+    "jsonwebtoken": "^5.7.0",
+    "moment-timezone": "^0.5.3",
+    "morgan": "^1.7.0",
+    "mysql": "^2.10.2",
+    "sequelize": "^3.21.0"
+  }
+}
