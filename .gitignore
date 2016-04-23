@@ -36,3 +36,6 @@ captures/
 
 # Nodejs modules
 node_modules/
+
+# Backup files
+.bak
