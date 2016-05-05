@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.edvaldotsi.nodejsandandroid.AbstractAdapter;
 import com.edvaldotsi.nodejsandandroid.R;
 import com.edvaldotsi.nodejsandandroid.model.Post;
 

@@ -23,6 +23,5 @@ names.forEach(function(name) {
 });
 
 module.exports = function(name) {
-
     return (name) ? models[name] : models;
 };

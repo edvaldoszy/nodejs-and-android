@@ -1,6 +1,7 @@
 package com.edvaldotsi.nodejsandandroid;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -31,9 +32,6 @@ public class LoginActivity extends AbstractActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        preferences = getSharedPreferences("NodejsAndAndroid", 0);
-        //Toast.makeText(LoginActivity.this, preferences.getString("token", ""), Toast.LENGTH_SHORT).show();
-
         checkboxRemember = (CheckBox) findViewById(R.id.checkbox_remember);
         editEmail = (EditText) findViewById(R.id.edit_email);
         editPassword = (EditText) findViewById(R.id.edit_password);
@@ -49,7 +47,7 @@ public class LoginActivity extends AbstractActivity {
     }
 
     private void startMainActivity() {
-        Intent intent = new Intent(this, PostsListActivity.class);
+        Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra("admin", true);
         startActivity(intent);
     }
@@ -57,13 +55,11 @@ public class LoginActivity extends AbstractActivity {
     private class ButtonSigninClickListener implements OnClickListener {
         @Override
         public void onClick(View v) {
-            //startActivity(new Intent(LoginActivity.this, PostActivity.class));
-
             final ProgressDialog dialog = new ProgressDialog(LoginActivity.this);
             dialog.setMessage("Carregando...");
             dialog.show();
 
-            UserService service = retrofit.create(UserService.class);
+            UserService service = createService(UserService.class);
             Call<UserAuth> caller = service.auth(editEmail.getText().toString(), editPassword.getText().toString());
             caller.enqueue(new Callback<UserAuth>() {
                 @Override
@@ -74,13 +70,14 @@ public class LoginActivity extends AbstractActivity {
                         SharedPreferences.Editor editor = preferences.edit();
                         editor.putString("token", response.body().getToken());
 
-                        /* Guarda os dados no celular */
+                        /* Store user credentials into the phone */
                         if (checkboxRemember.isChecked()) {
                             editor.putString("email", editEmail.getText().toString());
                             editor.putString("password", editPassword.getText().toString());
                         }
                         editor.apply();
 
+                        finish();
                         startMainActivity();
                     } else {
                         Toast.makeText(LoginActivity.this, "Credenciais inválidas", Toast.LENGTH_SHORT).show();

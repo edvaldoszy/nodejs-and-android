@@ -1,4 +1,4 @@
-package com.edvaldotsi.nodejsandandroid;
+package com.edvaldotsi.nodejsandandroid.adapter;
 
 import android.content.Context;
 import android.content.res.TypedArray;

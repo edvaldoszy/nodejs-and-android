@@ -59,7 +59,7 @@ public class PostsListActivity extends AbstractActivity {
     protected void onResume() {
         super.onResume();
 
-        PostService service = retrofit.create(PostService.class);
+        PostService service = createService(PostService.class);
         Call<JSON<Post>> call = service.getUserPosts(2, token);
         call.enqueue(new Callback<JSON<Post>>() {
             @Override

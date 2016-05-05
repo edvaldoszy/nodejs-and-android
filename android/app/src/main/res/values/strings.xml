@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">Nodejs and Android</string>
 
+    <!-- Api url -->
+    <string name="api_url">http://192.168.25.100/</string>
+
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
@@ -11,11 +14,21 @@
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
     <string name="permission_rationale">"Contacts permissions are needed for providing emailcompletions."</string>
-    <string name="title_activity_main">MainActivity</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="action_settings">Settings</string>
+    <!-- LoginActivity -->
+    <string name="title_activity_login">Fazer login</string>
+
+    <!-- MainActivity -->
+    <string name="title_activity_main">MainActivity</string>
+    <string name="label_menu_posts">Meus posts</string>
+    <string name="label_menu_done">Salvar</string>
+
+    <!-- PostsListActivity -->
     <string name="title_activity_post_list">Meus posts</string>
+
+    <!-- PostActivity -->
+    <string name="title_activity_post">Post</string>
 </resources>
