@@ -21,6 +21,8 @@ public class User {
     @Expose
     private String password;
 
+    private Group group;
+
     public User(long id, String name, String email) {
         this.id = id;
         this.name = name;
@@ -41,5 +43,14 @@ public class User {
 
     public String getPassword() {
         return password;
+    }
+
+    public Group getGroup() {
+        return group;
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }

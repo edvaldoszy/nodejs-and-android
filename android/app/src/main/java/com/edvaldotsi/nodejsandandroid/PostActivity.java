@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 import com.edvaldotsi.nodejsandandroid.model.Post;
 import com.edvaldotsi.nodejsandandroid.retrofit.PostService;
+import com.edvaldotsi.nodejsandandroid.retrofit.ServiceGenerator;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
 import retrofit2.Call;
@@ -49,8 +50,8 @@ public class PostActivity extends AbstractActivity {
         post.setTitle(editPostTitle.getText().toString());
         post.setContent(editPostContent.getText().toString());
 
-        PostService service = createService(PostService.class);
-        Call<Void> call = service.newPost(LOGGED_USER.getId(), post, token);
+        PostService service = ServiceGenerator.createService(PostService.class);
+        Call<Void> call = service.newPost(LOGGED_USER.getId(), post);
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {

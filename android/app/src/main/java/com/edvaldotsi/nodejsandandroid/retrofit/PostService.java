@@ -1,12 +1,10 @@
 package com.edvaldotsi.nodejsandandroid.retrofit;
 
 import com.edvaldotsi.nodejsandandroid.model.Post;
-import com.edvaldotsi.nodejsandandroid.retrofit.JSON;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
-import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
@@ -18,10 +16,7 @@ public interface PostService {
     @GET("/api/users/{user_id}/posts")
     Call<JSON<Post>> getUserPosts(
             @Path("user_id")
-            long userID,
-
-            @Header("token")
-            String token
+            long userID
     );
 
     @POST("/api/users/{user_id}/posts")
@@ -30,9 +25,6 @@ public interface PostService {
             long userID,
 
             @Body
-            Post post,
-
-            @Header("token")
-            String token
+            Post post
     );
 }
