@@ -5,7 +5,7 @@ var bodyParser = require('body-parser');
 var sequelize = require('./app/models')('sequelize');
 
 // Get port number from environment or default number 80
-const PORT = parseInt(process.env.PORT || 80);
+const PORT = parseInt(process.env.PORT) || 80;
 
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));

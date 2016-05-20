@@ -28,7 +28,7 @@
     "express-load": "^1.1.15",
     "fs": "0.0.2",
     "jsonwebtoken": "^5.7.0",
-    "moment-timezone": "^0.5.3",
+    "moment-timezone": "^0.5.4",
     "morgan": "^1.7.0",
     "mysql": "^2.10.2",
     "sequelize": "^3.21.0"
