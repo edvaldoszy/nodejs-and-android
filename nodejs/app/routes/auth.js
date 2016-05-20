@@ -1,6 +1,7 @@
 var router = require('express').Router();
 var config = require('../config')('jwt');
 var jwt = require('jsonwebtoken');
+var moment = require('moment-timezone');
 
 var UserModel = require('../models')('user');
 
@@ -15,27 +16,36 @@ router.post('/auth', function(request, response) {
         }).then(function(user) {
 
             if (!user) {
-                response.status(403).json({
+                response.status(401).json({
                     message: 'Invalid credentials'
                 });
                 return;
             }
 
-            if (!user.verifyPassword(request.body.password)) {
-                response.status(403).json({
+            if (!user.validate(request.body.password)) {
+                response.status(401).json({
                     message: 'Invalid credentials'
                 });
-            } else {
-                var payload = {
-                    name: user.name,
-                    email: user.email
-                };
-
-                var token = jwt.sign(payload, config['secret']);
-                response.status(200).json({
-                    token: token
-                });
+                return;
             }
+
+            var payload = {
+                user: {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    group_id: user.group_id
+                },
+                expires: moment().add(10, 'minute').unix()
+            };
+
+            var token = jwt.sign(payload, config['secret']);
+            response.status(200).json({
+                token: token,
+                expires: payload.expires,
+                user: payload.user
+            });
+
         }).catch(function (err) {
             throw err;
         });
@@ -50,33 +60,40 @@ router.post('/auth', function(request, response) {
 
 router.get('/auth/validate', function(request, response) {
 
-    response.status(200).send();
+    var token = request.query['token'] || request.headers['x-access-token'];
+    response.status(200).json({
+        token: token
+    });
 });
 
 router.use(function(request, response, next) {
 
-    if (request.path == '/auth') {
-        next();
-        return;
+    if (/^\/auth/i.test(request.path)) {
+        return next();
     }
 
-    var token = request.query['token'] || request.headers['token'];
+    var token = request.query['token'] || request.headers['x-access-token'];
     if (!token) {
-        response.status(403).json({
+        return response.status(401).json({
             message: 'No access token provided'
         });
-        return;
     }
 
     jwt.verify(token, config['secret'], function(err, decoded) {
         if (err) {
-            return response.status(403).json({
+            return response.status(401).json({
                 message: 'Invalid access token'
             });
         }
 
-        request.decoded = decoded;
-        next();
+        if (decoded.expires < moment().unix()) {
+            return response.status(403).json({
+                message: 'Access token expired'
+            });
+        }
+
+        request.user = decoded.user;
+        return next();
     });
 });
 

@@ -19,6 +19,10 @@ module.exports = function(sequelize, DataTypes) {
         password: {
             type: DataTypes.STRING(70),
             allowNull: false
+        },
+        group_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false
         }
     };
     
@@ -32,7 +36,7 @@ module.exports = function(sequelize, DataTypes) {
         },
 
         instanceMethods: {
-            verifyPassword: function(password) {
+            validate: function(password) {
                 return bcrypt.compareSync(password, this.password);
             }
         }

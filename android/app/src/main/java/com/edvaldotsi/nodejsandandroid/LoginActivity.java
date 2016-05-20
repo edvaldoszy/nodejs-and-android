@@ -1,7 +1,6 @@
 package com.edvaldotsi.nodejsandandroid;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -12,9 +11,10 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.edvaldotsi.nodejsandandroid.model.Auth;
 import com.edvaldotsi.nodejsandandroid.model.User;
-import com.edvaldotsi.nodejsandandroid.model.UserAuth;
-import com.edvaldotsi.nodejsandandroid.retrofit.UserService;
+import com.edvaldotsi.nodejsandandroid.retrofit.AuthService;
+import com.edvaldotsi.nodejsandandroid.retrofit.ServiceGenerator;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -22,9 +22,9 @@ import retrofit2.Response;
 
 public class LoginActivity extends AbstractActivity {
 
-    private CheckBox checkboxRemember;
-    private EditText editEmail;
-    private EditText editPassword;
+    private CheckBox mCheckboxRemember;
+    private EditText mEditTextEmail;
+    private EditText mEditTextPassword;
 
 
     @Override
@@ -32,18 +32,17 @@ public class LoginActivity extends AbstractActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        checkboxRemember = (CheckBox) findViewById(R.id.checkbox_remember);
-        editEmail = (EditText) findViewById(R.id.edit_email);
-        editPassword = (EditText) findViewById(R.id.edit_password);
+        mCheckboxRemember = (CheckBox) findViewById(R.id.checkbox_remember);
+        mCheckboxRemember.setChecked(preferences.getBoolean("login_remember", false));
 
-        editEmail.setText(preferences.getString("email", ""));
-        editPassword.setText(preferences.getString("password", ""));
+        mEditTextEmail = (EditText) findViewById(R.id.edit_email);
+        mEditTextPassword = (EditText) findViewById(R.id.edit_password);
 
-        Button buttonSignin = (Button) findViewById(R.id.button_signin);
-        buttonSignin.setOnClickListener(new ButtonSigninClickListener());
+        mEditTextEmail.setText(preferences.getString("login_email", ""));
+        mEditTextPassword.setText(preferences.getString("login_password", ""));
 
-        /* Usuário fictício */
-        LOGGED_USER = new User(2, "Edvaldo Szymonek", "edvaldoszy@gmail.com");
+        Button mButtonSignin = (Button) findViewById(R.id.button_signin);
+        mButtonSignin.setOnClickListener(new ButtonSigninClickListener());
     }
 
     private void startMainActivity() {
@@ -59,23 +58,32 @@ public class LoginActivity extends AbstractActivity {
             dialog.setMessage("Carregando...");
             dialog.show();
 
-            UserService service = createService(UserService.class);
-            Call<UserAuth> caller = service.auth(editEmail.getText().toString(), editPassword.getText().toString());
-            caller.enqueue(new Callback<UserAuth>() {
+            String email = mEditTextEmail.getText().toString();
+            String password = mEditTextPassword.getText().toString();
+
+            AuthService service = ServiceGenerator.createService(AuthService.class);
+            Call<Auth> caller = service.auth(email, password);
+            caller.enqueue(new Callback<Auth>() {
                 @Override
-                public void onResponse(Call<UserAuth> call, Response<UserAuth> response) {
+                public void onResponse(Call<Auth> call, Response<Auth> response) {
                     dialog.dismiss();
 
                     if (response.code() == 200) {
+                        Auth a = response.body();
+
                         SharedPreferences.Editor editor = preferences.edit();
-                        editor.putString("token", response.body().getToken());
+                        editor.putString("token", a.getToken());
 
                         /* Store user credentials into the phone */
-                        if (checkboxRemember.isChecked()) {
-                            editor.putString("email", editEmail.getText().toString());
-                            editor.putString("password", editPassword.getText().toString());
+                        if (mCheckboxRemember.isChecked()) {
+                            editor.putString("login_name", a.getUser().getName());
+                            editor.putString("login_email", a.getUser().getEmail());
+                            editor.putString("login_password", mEditTextPassword.getText().toString());
+                            editor.putBoolean("login_remember", mCheckboxRemember.isChecked());
                         }
                         editor.apply();
+
+                        LOGGED_USER = response.body().getUser();
 
                         finish();
                         startMainActivity();
@@ -85,8 +93,8 @@ public class LoginActivity extends AbstractActivity {
                 }
 
                 @Override
-                public void onFailure(Call<UserAuth> call, Throwable t) {
-                    Toast.makeText(LoginActivity.this, "Falhou, cara =(", Toast.LENGTH_SHORT).show();
+                public void onFailure(Call<Auth> call, Throwable t) {
+                    Toast.makeText(LoginActivity.this, "Falha na conexão", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                 }
             });

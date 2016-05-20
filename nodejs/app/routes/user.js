@@ -1,35 +1,87 @@
 var router = require('express').Router();
+var parser = require('../util/parser');
 
 var UserModel = require('../models')('user');
+var GroupModel = require('../models')('group');
 var PostModel = require('../models')('post');
 
 router.get('/', function(request, response) {
 
-    var limit = parseInt(request.query.limit) || 20;
-    var page = parseInt(request.query.page) || 1;
+    var limit = parser.intval(request.query.limit, 20);
+    var page = parser.intval(request.query.page, 1);
     var offset = (page > 1) ? ((page - 1) + limit) : 0;
 
+    var options = {
+        attributes: {
+            exclude: ['password']
+        },
+
+        offset: offset
+    };
+
+    // Só limita o resultado se for passado um valor acima de 0
+    if (limit > 0)
+        options.limit = limit;
+
     try {
-        UserModel.findAll({
+        UserModel.findAndCountAll(
+            options
+
+        ).then(function(users) {
+            console.info('Listing users');
+            response.status(200).json({
+                metadata: {
+                    count: users.count,
+                    limit: limit,
+                    page: page
+                },
+                results: users.rows
+            });
+
+        }).catch(function(err) {
+            throw err;
+        });
+
+    } catch (ex) {
+        console.error(ex);
+        response.status(500).json({
+            message: ex.message
+        });
+    }
+});
+
+router.get('/me', function(request, response) {
+
+    try {
+
+        UserModel.belongsTo(GroupModel);
+
+        UserModel.findOne({
             attributes: {
                 exclude: ['password']
             },
 
-            limit: limit,
-            offset: offset
+            include: {
+                model: GroupModel,
+                required: true
+            },
 
-        }).then(function(users) {
-            console.info('Listing users');
-            response.status(200).json({
-                metadata: {
-                    count: users.length,
-                    limit: limit,
-                    page: page
-                },
-                results: users
-            });
+            where: {
+                id: request.user.id
+            }
+        }).then(function(user) {
+            if (!user) {
+                console.log('User not found');
+                response.status(404).json({
+                    message: 'User not found'
+                });
+                return;
+            }
 
-        }).catch(function(err) {
+            console.info('Showing user');
+            response.status(200).json(user);
+
+        }).catch(function (err) {
             throw err;
         });
 
@@ -151,7 +203,8 @@ router.post('/', function(request, response) {
         UserModel.create({
             name: request.body.name,
             email: request.body.email,
-            password: request.body.password
+            password: request.body.password,
+            group_id: request.body.group_id
 
         }).then(function(user) {
             user.save();

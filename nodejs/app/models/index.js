@@ -10,7 +10,8 @@ var sequelize = new Sequelize(
 
 var names = [
     'user',
-    'post'
+    'post',
+    'group'
 ];
 
 var models = {
