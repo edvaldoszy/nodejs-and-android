@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
+    <group>
         <item
-            android:id="@+id/nav_camera"
+            android:id="@+id/nav_perfil"
             android:icon="@drawable/ic_menu_camera"
-            android:title="Import" />
+            android:title="Perfil" />
         <item
-            android:id="@+id/nav_gallery"
+            android:id="@+id/nav_posts"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery" />
+            android:title="Posts" />
         <item
             android:id="@+id/nav_slideshow"
             android:icon="@drawable/ic_menu_slideshow"
